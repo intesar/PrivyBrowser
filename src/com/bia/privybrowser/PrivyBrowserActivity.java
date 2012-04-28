@@ -19,7 +19,7 @@ public class PrivyBrowserActivity extends Activity {
 
 	private WebView page;
 	private EditText url;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,7 +34,7 @@ public class PrivyBrowserActivity extends Activity {
 		setting.setDomStorageEnabled(Boolean.TRUE);
 		setting.setSavePassword(Boolean.FALSE);
 		setting.setBuiltInZoomControls(Boolean.TRUE);
-		
+
 		page.loadUrl("http://www.google.com");
 
 		page.setOnKeyListener(new OnKeyListener() {
@@ -64,24 +64,26 @@ public class PrivyBrowserActivity extends Activity {
 	}
 
 	private void loadUrl() {
-		
-		String _url = url.getText().toString().trim();
-		if (_url.length() > 3 && !_url.startsWith("http")) {
-			_url = "http://" + _url;
-			
-			Context context = getApplicationContext();
-			CharSequence text = "loading...";
-			int duration = Toast.LENGTH_SHORT;
 
-			Toast toast = Toast.makeText(context, text, duration);
-			toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-			toast.show();
-			
-			page.loadUrl(_url);
+		String _url = url.getText().toString().trim();
+		if (_url.length() > 3) {
+			if (!_url.startsWith("http")) {
+				_url = "http://" + _url;
+
+				Context context = getApplicationContext();
+				CharSequence text = "loading...";
+				int duration = Toast.LENGTH_SHORT;
+
+				Toast toast = Toast.makeText(context, text, duration);
+				toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+				toast.show();
+
+				page.loadUrl(_url);
+			}
 		}
-		
-		
+
 	}
+
 	private class SimpleWebViewClient extends WebViewClient {
 
 		@Override
