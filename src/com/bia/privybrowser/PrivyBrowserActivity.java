@@ -1,7 +1,9 @@
 package com.bia.privybrowser;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -10,6 +12,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class PrivyBrowserActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -61,11 +64,23 @@ public class PrivyBrowserActivity extends Activity {
 	}
 
 	private void loadUrl() {
+		
 		String _url = url.getText().toString().trim();
-		if (!_url.startsWith("http")) {
+		if (_url.length() > 3 && !_url.startsWith("http")) {
 			_url = "http://" + _url;
+			
+			Context context = getApplicationContext();
+			CharSequence text = "loading...";
+			int duration = Toast.LENGTH_SHORT;
+
+			Toast toast = Toast.makeText(context, text, duration);
+			toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+			toast.show();
+			
+			page.loadUrl(_url);
 		}
-		page.loadUrl(_url);
+		
+		
 	}
 	private class SimpleWebViewClient extends WebViewClient {
 
