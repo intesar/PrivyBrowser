@@ -3,10 +3,13 @@ package com.bia.privybrowser;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -17,12 +20,27 @@ import android.widget.Toast;
 public class PrivyBrowserActivity extends Activity {
 	/** Called when the activity is first created. */
 
+	private static final String TAG = "PrivyBrowserActivity";
+
+	private boolean initialized;
 	private WebView page;
 	private EditText url;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		Log.d(TAG, "onCreate()");
+
+		initialize();
+
+	}
+
+	private void initialize() {
+		Log.d(TAG, "initialized " + initialized);
+		if (initialized)
+			return;
+
 		setContentView(R.layout.main);
 
 		url = (EditText) this.findViewById(R.id.url);
@@ -33,9 +51,11 @@ public class PrivyBrowserActivity extends Activity {
 		setting.setJavaScriptEnabled(Boolean.TRUE);
 		setting.setDomStorageEnabled(Boolean.TRUE);
 		setting.setSavePassword(Boolean.FALSE);
-		setting.setBuiltInZoomControls(Boolean.TRUE);
+		setting.setBuiltInZoomControls(Boolean.FALSE);
 
 		page.loadUrl("http://www.google.com");
+
+		loadUrl();
 
 		page.setOnKeyListener(new OnKeyListener() {
 
@@ -61,6 +81,7 @@ public class PrivyBrowserActivity extends Activity {
 			}
 		});
 
+		initialized = true;
 	}
 
 	private void loadUrl() {
@@ -69,19 +90,40 @@ public class PrivyBrowserActivity extends Activity {
 		if (_url.length() > 3) {
 			if (!_url.startsWith("http")) {
 				_url = "http://" + _url;
-
-				Context context = getApplicationContext();
-				CharSequence text = "loading...";
-				int duration = Toast.LENGTH_SHORT;
-
-				Toast toast = Toast.makeText(context, text, duration);
-				toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-				toast.show();
-
-				page.loadUrl(_url);
+				url.setText(_url);
 			}
+
+			Context context = getApplicationContext();
+			CharSequence text = "loading...";
+			int duration = Toast.LENGTH_SHORT;
+
+			Toast toast = Toast.makeText(context, text, duration);
+			toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+			toast.show();
+
+			page.loadUrl(_url);
+
 		}
 
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		CookieSyncManager.createInstance(this);
+		CookieManager cookieManager = CookieManager.getInstance();
+		cookieManager.removeAllCookie();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.d(TAG, "onKeyDown");
+		if (keyCode == KeyEvent.KEYCODE_BACK && page.canGoBack()) {
+			Log.d(TAG, "goBack");
+			page.goBack();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	private class SimpleWebViewClient extends WebViewClient {
@@ -93,18 +135,5 @@ public class PrivyBrowserActivity extends Activity {
 			return true;
 		}
 	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			if (page.canGoBack()) {
-				page.goBack();
-				return true;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-	
-	
 
 }
