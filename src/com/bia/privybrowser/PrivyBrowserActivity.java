@@ -87,8 +87,9 @@ public class PrivyBrowserActivity extends Activity {
 	private class SimpleWebViewClient extends WebViewClient {
 
 		@Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			view.loadUrl(url);
+		public boolean shouldOverrideUrlLoading(WebView view, String _url) {
+			url.setText(_url);
+			view.loadUrl(_url);
 			return true;
 		}
 	}
@@ -103,5 +104,7 @@ public class PrivyBrowserActivity extends Activity {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
+	
+	
 
 }
