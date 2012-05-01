@@ -109,8 +109,8 @@ public class PrivyBrowserActivity extends Activity {
 
 	}
 
-	// @Override
-	public void onPause1() {
+	@Override
+	public void onPause() {
 		super.onPause();
 		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
